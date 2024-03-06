@@ -86,9 +86,13 @@ def add_artifact_to_repo(repo, info):
 
 
 @click.command()
-@click.option("--repo", type=Path, default=Path("cfgraph.git"))
+@click.option("-r", "--repo", type=Path, default=Path("cfgraph.git"))
+@click.option("-f", "--file", type=Path)
 @click.argument("artifacts", type=Path, nargs=-1)
-def cli(repo, artifacts):
+def cli(repo, file, artifacts):
+    if file is not None:
+        artifact_file = file.open()
+        artifacts = (Path(path[:-1]) for path in artifact_file)
     repo = init_repo(repo)
     for artifact in artifacts:
         info = load_artifact(artifact)
