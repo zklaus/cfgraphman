@@ -16,10 +16,16 @@ classifiers = [
 dynamic = ["version"]
 requires-python = ">=3.9"
 dependencies = [
+    "click",
+    "pygit2",
+    "pygtrie",
 ]
 
 [project.urls]
 "Source Code" = "https://github.com/zklaus/cfgraphman"
+
+[project.scripts]
+cfgraphman = "cfgraphman.main:cli"
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
 [project.optional-dependencies]
