@@ -6,6 +6,7 @@ import click
 import pygtrie
 from pygit2 import Repository, Signature, discover_repository, init_repository
 from pygit2.enums import FileMode
+from tqdm import tqdm
 
 OLD_TIME = calendar.timegm((2018, 1, 1, 0, 0, 0, 0, 1, 0))
 
@@ -104,10 +105,10 @@ def add_artifact_to_repo(repo, info):
 def cli(repo, file, artifacts):
     """Main entry point for the cli."""
     if file is not None:
-        artifact_file = file.open()
-        artifacts = (Path(path[:-1]) for path in artifact_file)
+        with file.open() as artifact_file:
+            artifacts = [Path(path[:-1]) for path in artifact_file]
     repo = init_repo(repo)
-    for artifact in artifacts:
+    for artifact in tqdm(artifacts):
         info = load_artifact(artifact)
         add_artifact_to_repo(repo, info)
 
