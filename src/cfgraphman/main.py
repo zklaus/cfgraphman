@@ -11,6 +11,7 @@ OLD_TIME = calendar.timegm((2018, 1, 1, 0, 0, 0, 0, 1, 0))
 
 
 def init_repo(path):
+    """Initialize the repository."""
     path = path.as_posix()
     repo = discover_repository(path)
     if repo is not None:
@@ -26,16 +27,27 @@ def init_repo(path):
 
 
 def load_artifact(path):
+    """Parse one artifact's json info."""
     info = json.load(path.open())
     return info
 
 
 def info_to_artifact_id(info):
+    """Build artifact id from info dictionary."""
     idx = info["index"]
     return f"{idx['subdir']}/{idx['name']}-{idx['version']}-{idx['build']}"
 
 
 def add_artifact_to_repo(repo, info):
+    """Add an artifact to the repository.
+
+    It does so by adding all files in the artifact to the tree.
+    For every file we create a blob that contains the id of the artifact.
+    If the file already exists because it was added by a previous artifact,
+    we add the current artifact's id to the existing blob, one id per line.
+    Finally, the tree is added as a new commit, with one commit per artifact
+    added.
+    """
     artifact_id = info_to_artifact_id(info)
     try:
         timestamp = info["index"]["timestamp"] / 1000.0
@@ -90,6 +102,7 @@ def add_artifact_to_repo(repo, info):
 @click.option("-f", "--file", type=Path)
 @click.argument("artifacts", type=Path, nargs=-1)
 def cli(repo, file, artifacts):
+    """Main entry point for the cli."""
     if file is not None:
         artifact_file = file.open()
         artifacts = (Path(path[:-1]) for path in artifact_file)
